@@ -1,0 +1,67 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# =========================
+# Virtual environments
+# =========================
+.venv/
+venv/
+env/
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# FastAPI / Uvicorn
+# =========================
+*.log
+
+# =========================
+# Alembic
+# =========================
+alembic/versions/*.pyc
+
+# =========================
+# Docker
+# =========================
+*.pid
+docker-compose.override.yml
+
+# =========================
+# PostgreSQL
+# =========================
+pgdata/
+postgres_data/
+*.dump
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.devcontainer/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
