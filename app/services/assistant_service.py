@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-from uuid import UUID
 
 from app.models.assistant import Assistant
 from app.schemas.assistant import AssistantCreate, AssistantUpdate

@@ -10,8 +10,8 @@ class Chat(Base, TimestampMixin):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    assistant_id: Mapped[int] = mapped_column(ForeignKey("assistants.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    assistant_id: Mapped[int] = mapped_column(ForeignKey("assistants.id"), nullable=False)
 
     user = relationship("User")
     assistant = relationship("Assistant")
