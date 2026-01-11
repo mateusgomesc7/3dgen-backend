@@ -13,9 +13,9 @@ def get_message_service() -> MessageService:
     return MessageService(session=SessionLocal())
 
 
-@router.post("/", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=list[MessageResponse], status_code=status.HTTP_201_CREATED)
 def create_message(
     message: MessageCreate,
     service: MessageService = Depends(get_message_service)
 ):
-    return service.create(message)
+    return service.create_with_response(message)
