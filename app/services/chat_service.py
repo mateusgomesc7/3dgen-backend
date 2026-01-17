@@ -22,7 +22,7 @@ class ChatService:
         return self._db.query(Chat).filter(Chat.id == chat_id).first()
 
     def list(self) -> list[Chat]:
-        return self._db.query(Chat).all()
+        return self._db.query(Chat).order_by(Chat.created_at.desc()).all()
 
     def update(self, chat: Chat, data: ChatUpdate) -> Chat:
         if data.assistant_id is not None:
