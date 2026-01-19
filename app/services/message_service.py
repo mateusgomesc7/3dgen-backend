@@ -3,12 +3,14 @@ from fastapi import HTTPException, status
 
 from app.models.message import Message
 from app.models.chat import Chat
+from app.ollama.ollama_client import OllamaClient
 from app.schemas.message import MessageCreate
 
 
 class MessageService:
     def __init__(self, session: Session):
         self._db = session
+        self._ollama = OllamaClient()
 
     def create_with_response(self, data: MessageCreate) -> list[Message]:
         if data.chat_id is None:
@@ -35,10 +37,19 @@ class MessageService:
         self._db.commit()
         self._db.refresh(user_message)
 
+
+        try:
+            ai_response = self._ollama.generate(data.content)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail=f"Ollama error: {str(e)}",
+            )
+
         assistant_message = Message(
             chat_id=chat_id,
             role="assistant",
-            content=self._fake_ai_response(data.content),
+            content=ai_response,
         )
         self._db.add(assistant_message)
         self._db.commit()
