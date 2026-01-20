@@ -1,9 +1,11 @@
+import re
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
 from app.models.message import Message
 from app.models.chat import Chat
 from app.ollama.ollama_client import OllamaClient
+from app.ollama.validators import validate_threejs_code
 from app.schemas.message import MessageCreate
 
 
@@ -11,6 +13,12 @@ class MessageService:
     def __init__(self, session: Session):
         self._db = session
         self._ollama = OllamaClient()
+    
+    @staticmethod
+    def clean_ai_code(raw: str) -> str:
+        raw = re.sub(r"```[a-zA-Z]*\n?", "", raw)
+        raw = raw.replace("```", "")
+        return raw.strip()
 
     def create_with_response(self, data: MessageCreate) -> list[Message]:
         if data.chat_id is None:
@@ -39,7 +47,14 @@ class MessageService:
 
 
         try:
-            ai_response = self._ollama.generate(data.content)
+            ai_response = self._ollama.generate_threejs(data.content)
+            ai_response = self.clean_ai_code(ai_response)
+            validate_threejs_code(ai_response)
+        except ValueError as e:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=str(e),
+            )
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
