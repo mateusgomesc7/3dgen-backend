@@ -23,7 +23,7 @@ class MessageService:
     def get_message(self, message_id: int) -> Message | None:
         return self._db.query(Message).filter(Message.id == message_id).first()
 
-    def create_with_response(self, data: MessageCreate) -> list[Message]:
+    def create_with_response(self, data: MessageCreate) -> Message:
         if data.chat_id is None:
             chat = Chat()
             self._db.add(chat)
@@ -73,7 +73,7 @@ class MessageService:
         self._db.commit()
         self._db.refresh(assistant_message)
 
-        return [user_message, assistant_message]
+        return assistant_message
 
     def _fake_ai_response(self, prompt: str) -> str:
         return f"🤖 Fake response to: '{prompt}'"

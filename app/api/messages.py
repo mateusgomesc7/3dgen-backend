@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from uuid import UUID
 
 from app.db.session import get_db
 from app.schemas.message import MasssageUpdate, MessageCreate, MessageResponse
@@ -13,7 +12,7 @@ def get_message_service(db: Session = Depends(get_db)) -> MessageService:
     return MessageService(session=db)
 
 
-@router.post("/", response_model=list[MessageResponse], status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
 def create_message(
     message: MessageCreate,
     service: MessageService = Depends(get_message_service)
