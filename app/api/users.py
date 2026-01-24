@@ -2,15 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from uuid import UUID
 
-from app.db.session import SessionLocal
+from app.db.session import get_db
 from app.schemas.user import UserCreate, UserUpdate, UserResponse
 from app.services.user_service import UserService
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-def get_user_service() -> UserService:
-    return UserService(session=SessionLocal())
+def get_user_service(db: Session = Depends(get_db)) -> UserService:
+    return UserService(session=db)
 
 
 @router.get("/{user_id}", response_model=UserResponse)

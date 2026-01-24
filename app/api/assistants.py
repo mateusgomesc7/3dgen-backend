@@ -2,15 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from uuid import UUID
 
-from app.db.session import SessionLocal
+from app.db.session import get_db
 from app.schemas.assistant import AssistantCreate, AssistantUpdate, AssistantResponse
 from app.services.assistant_service import AssistantService
 
 router = APIRouter(prefix="/assistants", tags=["Assistants"])
 
 
-def get_assistant_service() -> AssistantService:
-    return AssistantService(session=SessionLocal())
+def get_assistant_service(db: Session = Depends(get_db)) -> AssistantService:
+    return AssistantService(session=db)
 
 
 @router.get("/{assistant_id}", response_model=AssistantResponse)

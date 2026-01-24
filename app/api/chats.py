@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from uuid import UUID
 
-from app.db.session import SessionLocal
+from app.db.session import get_db
 from app.schemas.chat import ChatCreate, ChatUpdate, ChatResponse
 from app.schemas.message import MessageResponse
 from app.services.chat_service import ChatService
@@ -11,11 +10,11 @@ from app.services.message_service import MessageService
 router = APIRouter(prefix="/chats", tags=["Chats"])
 
 
-def get_chat_service() -> ChatService:
-    return ChatService(session=SessionLocal())
+def get_chat_service(db: Session = Depends(get_db)) -> ChatService:
+    return ChatService(session=db)
 
-def get_message_service() -> MessageService:
-    return MessageService(session=SessionLocal())
+def get_message_service(db: Session = Depends(get_db)) -> MessageService:
+    return MessageService(session=db)
 
 
 @router.get("/{chat_id}", response_model=ChatResponse)
