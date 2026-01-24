@@ -8,6 +8,8 @@ class MessageCreate(BaseModel):
     role: Literal["user", "assistant", "system"]
     content: str
 
+class MasssageUpdate(BaseModel):
+    content: str
 
 class MessageResponse(BaseModel):
     id: int

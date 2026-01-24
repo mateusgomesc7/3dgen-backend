@@ -19,6 +19,9 @@ class MessageService:
         raw = re.sub(r"```[a-zA-Z]*\n?", "", raw)
         raw = raw.replace("```", "")
         return raw.strip()
+    
+    def get_message(self, message_id: int) -> Message | None:
+        return self._db.query(Message).filter(Message.id == message_id).first()
 
     def create_with_response(self, data: MessageCreate) -> list[Message]:
         if data.chat_id is None:
@@ -94,3 +97,9 @@ class MessageService:
             .order_by(Message.created_at.asc())
             .all()
         )
+
+    def update_message(self, message: Message, new_content: str) -> Message:
+        message.content = new_content
+        self._db.commit()
+        self._db.refresh(message)
+        return message
