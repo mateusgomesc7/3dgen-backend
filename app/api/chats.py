@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.schemas.chat import ChatCreate, ChatUpdate, ChatResponse
+from app.schemas.common import PaginatedResponse
 from app.schemas.message import MessageResponse
 from app.services.chat_service import ChatService
 from app.services.message_service import MessageService
@@ -28,11 +30,18 @@ def get_chat(
     return chat
 
 
-@router.get("/", response_model=list[ChatResponse])
+@router.get("/", response_model=PaginatedResponse[ChatResponse])
 def list_chats(
-    service: ChatService = Depends(get_chat_service)
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    user_id: Optional[int] = Query(None),
+    service: ChatService = Depends(get_chat_service),
 ):
-    return service.list()
+    return service.paginated_list(
+        page=page,
+        page_size=page_size,
+        user_id=user_id,
+    )
 
 
 @router.post("/", response_model=ChatResponse, status_code=status.HTTP_201_CREATED)
