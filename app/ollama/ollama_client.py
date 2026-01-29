@@ -1,8 +1,13 @@
+import os
 import requests
 from app.ollama.prompts import THREEJS_SYSTEM_PROMPT
 
+BASE_URL_OLLAMA = os.getenv("BASE_URL_OLLAMA")
+if BASE_URL_OLLAMA is None:
+    raise ValueError("BASE_URL_OLLAMA environment variable is not set")
+
 class OllamaClient:
-    def __init__(self, base_url: str = "http://host.docker.internal:11434"):
+    def __init__(self, base_url: str = BASE_URL_OLLAMA):
         self.base_url = base_url
 
     def generate(self, prompt: str) -> str:
