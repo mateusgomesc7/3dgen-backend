@@ -1,6 +1,9 @@
 import os
 import requests
 from app.ollama.prompts import THREEJS_SYSTEM_PROMPT
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_URL_OLLAMA = os.getenv("BASE_URL_OLLAMA")
 if BASE_URL_OLLAMA is None:
