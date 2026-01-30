@@ -20,8 +20,11 @@ class AssistantService:
     def get_assistant(self, assistant_id: int) -> Assistant | None:
         return self._db.query(Assistant).filter(Assistant.id == assistant_id).first()
 
-    def list_assistants(self):
-        return self._db.query(Assistant).order_by(Assistant.id.desc()).all()
+    def list_assistants(self, is_active: bool | None = None) -> list[Assistant]:
+        query = self._db.query(Assistant).order_by(Assistant.id.desc())
+        if is_active is not None:
+            query = query.filter(Assistant.is_active == is_active)
+        return query.all()
 
     def update_assistant(self, assistant: Assistant, data: AssistantUpdate) -> Assistant:
         for field, value in data.dict(exclude_unset=True).items():

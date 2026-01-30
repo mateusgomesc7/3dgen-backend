@@ -1,6 +1,6 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from uuid import UUID
 
 from app.db.session import get_db
 from app.schemas.assistant import AssistantCreate, AssistantUpdate, AssistantResponse
@@ -26,9 +26,10 @@ def get_assistant(
 
 @router.get("/", response_model=list[AssistantResponse])
 def list_assistants(
+    is_active: Optional[bool] = None,
     service: AssistantService = Depends(get_assistant_service)
 ):
-    return service.list_assistants()
+    return service.list_assistants(is_active=is_active)
 
 
 @router.post("/", response_model=AssistantResponse, status_code=status.HTTP_201_CREATED)
