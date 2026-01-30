@@ -13,6 +13,7 @@ class OllamaClient:
     def __init__(self, base_url: str = BASE_URL_OLLAMA):
         self.base_url = base_url
 
+
     def generate(self, prompt: str) -> str:
         payload = {
             "model": "gemma3:latest",
@@ -28,6 +29,7 @@ class OllamaClient:
 
         response.raise_for_status()
         return response.json()["response"]
+
 
     def generate_threejs(self, user_prompt: str) -> str:
         final_prompt = f"""
@@ -51,3 +53,13 @@ class OllamaClient:
 
         response.raise_for_status()
         return response.json()["response"]
+
+
+    def list_models(self) -> list:
+        response = requests.get(
+            f"{self.base_url}/api/tags",
+            timeout=10
+        )
+
+        response.raise_for_status()
+        return response.json().get("models", [])

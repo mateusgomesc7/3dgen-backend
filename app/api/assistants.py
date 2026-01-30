@@ -38,6 +38,12 @@ def create_assistant(
 ):
     return service.create_assistant(assistant)
 
+@router.post("/sync", response_model=str)
+def sync_models(
+    service: AssistantService = Depends(get_assistant_service)
+):
+    return service.sync_models()
+
 
 @router.put("/{assistant_id}", response_model=AssistantResponse)
 def update_assistant(

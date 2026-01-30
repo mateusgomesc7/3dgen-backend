@@ -75,9 +75,6 @@ class MessageService:
 
         return assistant_message
 
-    def _fake_ai_response(self, prompt: str) -> str:
-        return f"🤖 Fake response to: '{prompt}'"
-
     def list_by_chat(self, chat_id: int) -> list[Message]:
         chat_exists = (
             self._db.query(Chat.id)
