@@ -2,6 +2,7 @@ import re
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
+from app.models.assistant import Assistant
 from app.models.message import Message
 from app.models.chat import Chat
 from app.ollama.ollama_client import OllamaClient
@@ -41,6 +42,7 @@ class MessageService:
 
         user_message = Message(
             chat_id=chat_id,
+            assistant_id=data.assistant_id,
             role="user",
             content=data.content,
         )
@@ -48,9 +50,16 @@ class MessageService:
         self._db.commit()
         self._db.refresh(user_message)
 
+        assistant = self._db.query(Assistant).filter(Assistant.id == data.assistant_id).first()
+
+        if not assistant or not assistant.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Assistente não encontrado ou inativo no Ollama."
+            )
 
         try:
-            ai_response = self._ollama.generate_threejs(data.content)
+            ai_response = self._ollama.generate_threejs(data.content, assistant.name)
             ai_response = self.clean_ai_code(ai_response)
             validate_threejs_code(ai_response)
         except ValueError as e:
@@ -66,6 +75,7 @@ class MessageService:
 
         assistant_message = Message(
             chat_id=chat_id,
+            assistant_id=data.assistant_id,
             role="assistant",
             content=ai_response,
         )

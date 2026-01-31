@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.schemas.chat import ChatCreate, ChatUpdate, ChatResponse
+from app.schemas.chat import ChatCreate, ChatResponse
 from app.schemas.common import PaginatedResponse
 from app.schemas.message import MessageResponse
 from app.services.chat_service import ChatService
@@ -50,19 +50,6 @@ def create_chat(
     service: ChatService = Depends(get_chat_service)
 ):
     return service.create(chat)
-
-
-@router.put("/{chat_id}", response_model=ChatResponse)
-def update_chat(
-    chat_id: int,
-    payload: ChatUpdate,
-    service: ChatService = Depends(get_chat_service)
-):
-    chat = service.get(chat_id)
-    if not chat:
-        raise HTTPException(status_code=404, detail="Chat not found")
-
-    return service.update(chat, payload)
 
 @router.delete("/{chat_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_chat(

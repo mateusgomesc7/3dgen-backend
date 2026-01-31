@@ -31,7 +31,7 @@ class OllamaClient:
         return response.json()["response"]
 
 
-    def generate_threejs(self, user_prompt: str) -> str:
+    def generate_threejs(self, user_prompt: str, model_name: str) -> str:
         final_prompt = f"""
             {THREEJS_SYSTEM_PROMPT}
 
@@ -40,7 +40,7 @@ class OllamaClient:
         """
 
         payload = {
-            "model": "gemma3:latest",
+            "model": model_name,
             "prompt": final_prompt,
             "stream": False
         }

@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from app.models.chat import Chat
-from app.schemas.chat import ChatCreate, ChatUpdate
+from app.schemas.chat import ChatCreate
 
 
 class ChatService:
@@ -11,10 +11,7 @@ class ChatService:
         self._db = session
 
     def create(self, data: ChatCreate) -> Chat:
-        chat = Chat(
-            user_id=data.user_id,
-            assistant_id=data.assistant_id,
-        )
+        chat = Chat(user_id=data.user_id)
         self._db.add(chat)
         self._db.commit()
         self._db.refresh(chat)
@@ -25,14 +22,6 @@ class ChatService:
 
     def list(self) -> list[Chat]:
         return self._db.query(Chat).order_by(Chat.created_at.desc()).all()
-
-    def update(self, chat: Chat, data: ChatUpdate) -> Chat:
-        if data.assistant_id is not None:
-            chat.assistant_id = data.assistant_id
-
-        self._db.commit()
-        self._db.refresh(chat)
-        return chat
 
     def delete(self, chat: Chat) -> None:
         self._db.delete(chat)
