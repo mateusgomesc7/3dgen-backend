@@ -56,8 +56,4 @@ def delete_user(
     user_id: int,
     service: UserService = Depends(get_user_service)
 ):
-    user = service.get_user(user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    service.delete_user(user)
+    service.delete_user(user_id)
