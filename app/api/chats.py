@@ -51,6 +51,7 @@ def create_chat(
 ):
     return service.create(chat)
 
+
 @router.delete("/{chat_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_chat(
     chat_id: int,
@@ -61,6 +62,7 @@ def delete_chat(
         raise HTTPException(status_code=404, detail="Chat not found")
 
     service.delete(chat)
+
 
 @router.get("/{chat_id}/messages", response_model=list[MessageResponse])
 def list_chat_messages(

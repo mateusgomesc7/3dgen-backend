@@ -27,3 +27,12 @@ MANDATORY RULES:
 The user's request describes WHAT to build.
 You decide HOW to implement it.
 """
+
+
+def build_prompt(user_prompt: str) -> str:
+    return f"""
+            {THREEJS_SYSTEM_PROMPT}
+
+            USER REQUEST:
+            {user_prompt}
+        """.strip()

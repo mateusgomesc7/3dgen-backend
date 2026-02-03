@@ -1,21 +1,23 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
 
-class AssistantCreate(BaseModel):
-    name: Optional[str] = None
+class ModelCreate(BaseModel):
+    name: str
+    provider_id: int
 
 
-class AssistantUpdate(BaseModel):
+class ModelUpdate(BaseModel):
     name: Optional[str] = None
     is_active: Optional[bool] = None
     last_checked_at: Optional[datetime] = None
 
 
-class AssistantResponse(BaseModel):
+class ModelResponse(BaseModel):
     id: int
-    name: Optional[str]
+    name: str
+    provider_id: int
     is_active: bool
     last_checked_at: Optional[datetime]
     created_at: datetime

@@ -1,4 +1,3 @@
-from typing import Optional
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -9,13 +8,17 @@ from .base import TimestampMixin
 class Message(Base, TimestampMixin):
     __tablename__ = "messages"
 
-    id: Mapped[int] = mapped_column(Integer,primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"))
 
-    assistant_id: Mapped[Optional[int]] = mapped_column(ForeignKey("assistants.id"), nullable=True)
+    model_id: Mapped[int] = mapped_column(
+        ForeignKey("models.id"),
+        nullable=False
+    )
 
     role: Mapped[str] = mapped_column()
     content: Mapped[str] = mapped_column(Text)
 
     chat = relationship("Chat", back_populates="messages")
+    model = relationship("Model", back_populates="messages")

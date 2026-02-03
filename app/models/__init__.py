@@ -1,6 +1,7 @@
 from .user import User
-from .assistant import Assistant
+from .provider import Provider
+from .model import Model
 from .chat import Chat
 from .message import Message
 
-__all__ = ["User", "Assistant", "Chat", "Message"]
+__all__ = ["User", "Provider", "Model", "Chat", "Message"]
