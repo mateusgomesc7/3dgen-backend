@@ -6,8 +6,11 @@ from app.api.models import router as models_router
 from app.api.chats import router as chats_router
 from app.api.messages import router as messages_router
 from app.api.providers import router as providers_router
+from app.core.errors import setup_exception_handlers
 
 app = FastAPI(title="FastAPI + Docker + Alembic")
+
+setup_exception_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,

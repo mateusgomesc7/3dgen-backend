@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
 
 from app.models.model import Model
+from app.models.message import Message
 from app.schemas.model import ModelCreate, ModelUpdate
+from app.exceptions.base import NotFoundException, ConflictException
 
 class ModelService:
     def __init__(self, session: Session):
@@ -31,7 +33,16 @@ class ModelService:
         self._db.refresh(model)
         return model
 
-    def delete_model(self, model: Model):
+    def delete_model(self, model_id: int) -> None:
+        model = self.get_model(model_id)
+
+        if not model:
+            raise NotFoundException(f"Model with ID {model_id} not found.")
+
+        has_messages = self._db.query(Message).filter(Message.model_id == model_id).first()
+        if has_messages:
+            raise ConflictException("Cannot delete model: it has linked messages.")
+
         self._db.delete(model)
         self._db.commit()
     

@@ -58,8 +58,4 @@ def delete_model(
     model_id: int,
     service: ModelService = Depends(get_model_service)
 ):
-    model = service.get_model(model_id)
-    if not model:
-        raise HTTPException(status_code=404, detail="Model not found")
-
-    service.delete_model(model)
+    service.delete_model(model_id)
