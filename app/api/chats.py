@@ -57,11 +57,7 @@ def delete_chat(
     chat_id: int,
     service: ChatService = Depends(get_chat_service)
 ):
-    chat = service.get(chat_id)
-    if not chat:
-        raise HTTPException(status_code=404, detail="Chat not found")
-
-    service.delete(chat)
+    service.delete(chat_id)
 
 
 @router.get("/{chat_id}/messages", response_model=list[MessageResponse])

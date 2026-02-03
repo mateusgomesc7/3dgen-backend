@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.models.chat import Chat
 from app.schemas.chat import ChatCreate
+from app.exceptions.base import NotFoundException
 
 
 class ChatService:
@@ -23,10 +24,15 @@ class ChatService:
     def list(self) -> list[Chat]:
         return self._db.query(Chat).order_by(Chat.created_at.desc()).all()
 
-    def delete(self, chat: Chat) -> None:
+    def delete(self, chat_id: int) -> None:
+        chat = self.get(chat_id)
+
+        if not chat:
+            raise NotFoundException(f"Chat with ID {chat_id} not found.")
+
         self._db.delete(chat)
         self._db.commit()
-    
+
     def paginated_list(
         self,
         page: int,
