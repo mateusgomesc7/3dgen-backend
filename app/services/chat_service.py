@@ -12,7 +12,11 @@ class ChatService:
         self._db = session
 
     def create(self, data: ChatCreate) -> Chat:
-        chat = Chat(user_id=data.user_id)
+        title = ""
+        if data.user_prompt:
+            title = self._generate_chat_title(data.user_prompt, 50)
+
+        chat = Chat(user_id=data.user_id, name=title)
         self._db.add(chat)
         self._db.commit()
         self._db.refresh(chat)
@@ -63,3 +67,14 @@ class ChatService:
             "total": total,
             "pages": math.ceil(total / page_size),
         }
+
+
+    @staticmethod
+    def _generate_chat_title(text: str, max_length: int = 50) -> str:
+        text = text.strip()
+
+        if len(text) <= max_length:
+            return text
+
+        cut = text[:max_length]
+        return cut.rsplit(" ", 1)[0]
