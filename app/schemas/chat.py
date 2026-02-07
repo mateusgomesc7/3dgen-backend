@@ -18,3 +18,6 @@ class ChatResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ChatRename(BaseModel):
+    name: str
