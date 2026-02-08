@@ -1,8 +1,10 @@
 import os
 from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 from app.services.assistants.base import AssistantClient
+from app.services.ai.prompt import THREEJS_SYSTEM_PROMPT
 
 load_dotenv()
 
@@ -16,11 +18,30 @@ class GoogleGenaiClient(AssistantClient):
         self.client = genai.Client(api_key=API_KEY_GOOGLE_GENAI)
 
 
-    def generate(self, prompt: str, model_name: str) -> str:
+    def generate(self, content: str, history: list[dict], model_name: str) -> str:
+        messages = self._build_messages(history, content)
+
         response = self.client.models.generate_content(
-            model=model_name, contents=[prompt]
+            model=model_name,
+            contents=messages,
+            config=types.GenerateContentConfig(
+                system_instruction=THREEJS_SYSTEM_PROMPT
+            ),
         )
+
         return response.text or ""
+
+
+    def build_message_dict(self, role: str, content: str) -> dict:
+        if role == "assistant":
+            role = "model"
+
+        return {
+            "role": role,
+            "parts": [{
+                "text": content
+            }]
+        }
 
 
     def list_models(self) -> list:
@@ -50,3 +71,11 @@ class GoogleGenaiClient(AssistantClient):
         except Exception as e:
             print(f"Error listing Google GenAI models: {e}")
             return []
+
+
+    def _build_messages(self, history: list[dict], content: str) -> list[dict]:
+        messages = history.copy()
+
+        messages.append(self.build_message_dict("user", content))
+
+        return messages

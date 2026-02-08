@@ -2,6 +2,7 @@ import os
 import requests
 from dotenv import load_dotenv
 
+from app.services.ai.prompt import THREEJS_SYSTEM_PROMPT
 from app.services.assistants.base import AssistantClient
 
 load_dotenv()
@@ -15,22 +16,31 @@ class OllamaClient(AssistantClient):
         self.base_url = base_url
 
 
-    def generate(self, prompt: str, model_name: str) -> str:
+    def generate(self, content: str, history: list[dict], model_name: str) -> str:
+        messages = self._build_messages(history, content)
+
         payload = {
             "model": model_name,
-            "prompt": prompt,
+            "messages": messages,
             "stream": False,
             "think": False
         }
 
         response = requests.post(
-            f"{self.base_url}/api/generate",
+            f"{self.base_url}/api/chat",
             json=payload,
             timeout=480
         )
 
         response.raise_for_status()
-        return response.json()["response"]
+        return response.json()["message"]["content"]
+
+
+    def build_message_dict(self, role: str, content: str) -> dict:
+        return {
+            "role": role,
+            "content": content
+        }
 
 
     def list_models(self) -> list:
@@ -41,3 +51,13 @@ class OllamaClient(AssistantClient):
 
         response.raise_for_status()
         return response.json().get("models", [])
+
+
+    def _build_messages(self, history: list[dict], content: str) -> list[dict]:
+        messages = [self.build_message_dict("system", THREEJS_SYSTEM_PROMPT)]
+
+        messages.extend(history)
+
+        messages.append(self.build_message_dict("user", content))
+
+        return messages
