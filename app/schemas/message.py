@@ -1,16 +1,19 @@
 from datetime import datetime
-from pydantic import BaseModel
 from typing import Literal
+
+from pydantic import BaseModel
 
 
 class MessageCreate(BaseModel):
     chat_id: int
     model_id: int
-    role: Literal["user", "assistant", "system"]
+    role: Literal['user', 'assistant', 'system']
     content: str
+
 
 class MasssageUpdate(BaseModel):
     content: str
+
 
 class MessageResponse(BaseModel):
     id: int

@@ -1,10 +1,11 @@
 import math
 from typing import Optional
+
 from sqlalchemy.orm import Session
 
+from app.exceptions.base import NotFoundError
 from app.models.chat import Chat
 from app.schemas.chat import ChatCreate
-from app.exceptions.base import NotFoundException
 
 
 class ChatService:
@@ -12,7 +13,7 @@ class ChatService:
         self._db = session
 
     def create(self, data: ChatCreate) -> Chat:
-        title = ""
+        title = ''
         if data.user_prompt:
             title = self._generate_chat_title(data.user_prompt, 50)
 
@@ -32,7 +33,7 @@ class ChatService:
         chat = self.get(chat_id)
 
         if not chat:
-            raise NotFoundException(f"Chat with ID {chat_id} not found.")
+            raise NotFoundError(f'Chat with ID {chat_id} not found.')
 
         chat.name = new_name
         self._db.commit()
@@ -43,7 +44,7 @@ class ChatService:
         chat = self.get(chat_id)
 
         if not chat:
-            raise NotFoundException(f"Chat with ID {chat_id} not found.")
+            raise NotFoundError(f'Chat with ID {chat_id} not found.')
 
         self._db.delete(chat)
         self._db.commit()
@@ -64,21 +65,16 @@ class ChatService:
         total = query.count()
 
         items = (
-            query
-            .order_by(Chat.created_at.desc())
-            .offset(offset)
-            .limit(page_size)
-            .all()
+            query.order_by(Chat.created_at.desc()).offset(offset).limit(page_size).all()
         )
 
         return {
-            "items": items,
-            "page": page,
-            "page_size": page_size,
-            "total": total,
-            "pages": math.ceil(total / page_size),
+            'items': items,
+            'page': page,
+            'page_size': page_size,
+            'total': total,
+            'pages': math.ceil(total / page_size),
         }
-
 
     @staticmethod
     def _generate_chat_title(text: str, max_length: int = 50) -> str:
@@ -88,4 +84,4 @@ class ChatService:
             return text
 
         cut = text[:max_length]
-        return cut.rsplit(" ", 1)[0]
+        return cut.rsplit(' ', 1)[0]

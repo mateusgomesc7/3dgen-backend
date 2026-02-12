@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-class AssistantClient(ABC):
 
+class AssistantClient(ABC):
     @abstractmethod
     def generate(self, content: str, history: list[dict], model_name: str) -> str:
         pass

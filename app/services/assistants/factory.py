@@ -1,7 +1,7 @@
-from app.services.assistants.base import AssistantClient
-from app.services.assistants.ollama import OllamaClient
-from app.services.assistants.google_genai import GoogleGenaiClient
 from app.schemas.enums import ProviderType
+from app.services.assistants.base import AssistantClient
+from app.services.assistants.google_genai import GoogleGenaiClient
+from app.services.assistants.ollama import OllamaClient
 
 
 def get_assistant(provider: str) -> AssistantClient:

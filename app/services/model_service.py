@@ -1,14 +1,15 @@
 from sqlalchemy.orm import Session
 
-from app.models.model import Model
+from app.exceptions.base import ConflictError, NotFoundError
 from app.models.message import Message
+from app.models.model import Model
 from app.schemas.model import ModelCreate, ModelUpdate
-from app.exceptions.base import NotFoundException, ConflictException
+
 
 class ModelService:
     def __init__(self, session: Session):
         self._db = session
-    
+
     def create_model(self, data: ModelCreate) -> Model:
         model = Model(**data.dict())
         self._db.add(model)
@@ -37,12 +38,13 @@ class ModelService:
         model = self.get_model(model_id)
 
         if not model:
-            raise NotFoundException(f"Model with ID {model_id} not found.")
+            raise NotFoundError(f'Model with ID {model_id} not found.')
 
-        has_messages = self._db.query(Message).filter(Message.model_id == model_id).first()
+        has_messages = (
+            self._db.query(Message).filter(Message.model_id == model_id).first()
+        )
         if has_messages:
-            raise ConflictException("Cannot delete model: it has linked messages.")
+            raise ConflictError('Cannot delete model: it has linked messages.')
 
         self._db.delete(model)
         self._db.commit()
-    
