@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.exceptions.base import NotFoundError
 from app.models.chat import Chat
 from app.models.message import Message
 from app.models.model import Model
@@ -34,18 +35,12 @@ class MessageService:
         else:
             chat = self._db.query(Chat).filter(Chat.id == data.chat_id).first()
             if not chat:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail='Chat not found',
-                )
+                raise NotFoundError(f'Chat with ID {data.chat_id} not found.')
             chat_id = chat.id
 
         model = self._db.query(Model).filter(Model.id == data.model_id).first()
         if not model or not model.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Model not found or inactive.',
-            )
+            raise NotFoundError(f'Model with ID {data.model_id} not found or inactive.')
 
         assistant_ai = get_assistant(provider=model.provider.name)
         history = self._get_formatted_history(chat_id, assistant_ai)
@@ -93,10 +88,7 @@ class MessageService:
         chat_exists = self._db.query(Chat.id).filter(Chat.id == chat_id).first()
 
         if not chat_exists:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='Chat not found',
-            )
+            raise NotFoundError(f'Chat with ID {chat_id} not found.')
 
         return (
             self._db.query(Message)
