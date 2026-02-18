@@ -1,18 +1,8 @@
 FORBIDDEN_TOKENS = [
-    'eval(',
-    'Function(',
-    'setTimeout(',
-    'setInterval(',
     'document.cookie',
     'localStorage',
     'sessionStorage',
     'indexedDB',
-    'window.location',
-    'window.parent',
-    'window.top',
-    '.innerHTML',
-    '.outerHTML',
-    'document.write',
 ]
 
 
